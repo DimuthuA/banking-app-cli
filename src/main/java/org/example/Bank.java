@@ -5,7 +5,44 @@ import java.util.Scanner;
 
 public class Bank {
 
-    // Choice 1
+    // Options under Choice 1
+    private static final int OPTION_ACCESS_ACCOUNT = 1;
+    private static final int OPTION_SHOW_CUSTOMER_DETAILS = 2;
+    private static final int OPTION_TERMINATE_APPLICATION = 3;
+
+    // Options under Choice 2
+    private static final int OPTION_SHOW_ACCOUNT_DETAILS = 1;
+    private static final int OPTION_DEPOSIT_CASH = 2;
+    private static final int OPTION_WITHDRAW_CASH = 3;
+    private static final int OPTION_TRANSFER_CASH = 4;
+    private static final int OPTION_GO_BACK = 5;
+
+    public static void main(String[] args) {
+
+        BankingSystem bankingSystem = new BankingSystem();
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            int choice1 = handleChoice1Input(scanner);
+
+            switch (choice1) {
+                case OPTION_ACCESS_ACCOUNT:
+                    processAccountOperations(bankingSystem, scanner);
+                    break;
+                case OPTION_SHOW_CUSTOMER_DETAILS:
+                    handleShowCustomerDetails(bankingSystem, scanner);
+                    break;
+                case OPTION_TERMINATE_APPLICATION:
+                    System.out.println("\nTerminating application...");
+                    return;
+                default:
+                    System.out.println("\nInvalid Input! Please select your choice and enter the relevant number.");
+                    break;
+            }
+        }
+    }
+
+    // Choice 1 - prompt and recording input
     public static int handleChoice1Input(Scanner scanner) {
         while (true) {
             System.out.print("""
@@ -13,7 +50,7 @@ public class Bank {
                         # Select an option -->
                             1 - Access an account
                             2 - Show customer details
-                            3 - Terminate program
+                            3 - Terminate application
                             
                             ENTER:\s""");
 
@@ -30,7 +67,7 @@ public class Bank {
         }
     }
 
-    // Choice 2
+    // Choice 2 - prompt and recording input
     public static int handleChoice2Input(Scanner scanner) {
         while (true) {
             System.out.print("""
@@ -57,7 +94,45 @@ public class Bank {
         }
     }
 
-    // Choice 1 : Option 2
+    // Choice 1: OPTION_ACCESS_ACCOUNT
+    private static void processAccountOperations(BankingSystem bankingSystem, Scanner scanner) {
+        boolean goBack = false;
+
+        String accNumber = handleAccountNumberInput(scanner, "the");
+        Account loadedAccount = handleAccessAccount(bankingSystem, accNumber);
+
+        if (loadedAccount == null) {
+            System.out.println("\nNo account found with account number: " + accNumber);
+            goBack = true;
+        }
+
+        while (!goBack) {
+            int choice2 = handleChoice2Input(scanner);
+
+            switch (choice2) {
+                case OPTION_SHOW_ACCOUNT_DETAILS:
+                    handlePrintDetails(bankingSystem, loadedAccount);
+                    break;
+                case OPTION_DEPOSIT_CASH:
+                    handleDepositCash(bankingSystem, scanner, loadedAccount);
+                    break;
+                case OPTION_WITHDRAW_CASH:
+                    handleWithdrawCash(bankingSystem, scanner, loadedAccount);
+                    break;
+                case OPTION_TRANSFER_CASH:
+                    handleTransferCash(bankingSystem, scanner, loadedAccount);
+                    break;
+                case OPTION_GO_BACK:
+                    goBack = true;
+                    break;
+                default:
+                    System.out.println("\nInvalid Input! Please select your choice and enter the relevant number.");
+                    break;
+            }
+        }
+    }
+
+    // Choice 1 : OPTION_SHOW_CUSTOMER_DETAILS
     public static void handleShowCustomerDetails(BankingSystem bankingSystem, Scanner scanner) {
         System.out.print("\n# Enter NIC: ");
         String nic = scanner.next().strip();
@@ -70,40 +145,15 @@ public class Bank {
         }
     }
 
-    // Choice 1 : Option 1
-    public static String handleAccountNumberInput(Scanner scanner, String partialString) {
-        System.out.printf("\n# Enter %s account number: ", partialString);
-        return scanner.next().strip();
-    }
-
-    // Choice 1 : Option 1
-    public static Account handleAccessAccount(BankingSystem bankingSystem, String accNumber) {
-        return bankingSystem.loadAccountByNumber(accNumber);
-
-    }
-
-    // Choice 1 : Option 1 -> Choice 2 : Option 2, 3, 4
-    public static double handleAmountInput(Scanner scanner, String transactionType) {
-        while (true) {
-            System.out.printf("\nEnter amount to %s: ", transactionType);
-
-            try {
-                return Double.parseDouble(scanner.next());
-
-            } catch(NumberFormatException e) {
-                System.out.println("\nInvalid input! Please enter a valid amount.");
-            }
-        }
-    }
-
-    // Choice 1 : Option 1 -> Choice 2 : Option 2, 3, 4
+    // Choice 1 : OPTION_ACCESS_ACCOUNT -> Choice 2 : OPTION_SHOW_ACCOUNT_DETAILS
+    // and inside handleDepositCash(), handleWithdrawCash(), handleTransferCash()
     public static void handlePrintDetails(BankingSystem bankingSystem, Printable... printableObjects) {
         for (Printable printable : printableObjects) {
-          bankingSystem.printDetails(printable);
+            bankingSystem.printDetails(printable);
         }
     }
 
-    // Choice 1 : Option 1 -> Choice 2 : Option 2
+    // Choice 1 : OPTION_ACCESS_ACCOUNT -> Choice 2 : OPTION_DEPOSIT_CASH
     public static void handleDepositCash(BankingSystem bankingSystem, Scanner scanner, Account loadedAccount) {
         double amount = handleAmountInput(scanner, "deposit");
 
@@ -117,7 +167,7 @@ public class Bank {
 
     }
 
-    // Choice 1 : Option 1 -> Choice 2 : Option 3
+    // Choice 1 : OPTION_ACCESS_ACCOUNT -> Choice 2 : OPTION_WITHDRAW_CASH
     public static void handleWithdrawCash(BankingSystem bankingSystem, Scanner scanner, Account loadedAccount) {
         double amount = handleAmountInput(scanner, "withdraw");
 
@@ -130,7 +180,7 @@ public class Bank {
         handlePrintDetails(bankingSystem, mergedAccount, mergedTransaction);
     }
 
-    // Choice 1 : Option 1 -> Choice 2 : Option 4
+    // Choice 1 : OPTION_ACCESS_ACCOUNT -> Choice 2 : OPTION_TRANSFER_CASH
     public static void handleTransferCash(BankingSystem bankingSystem, Scanner scanner, Account loadedAccount) {
         String recipientAccNumber = handleAccountNumberInput(scanner, "recipient's");
         Account recipientAccount = handleAccessAccount(bankingSystem, recipientAccNumber);
@@ -146,65 +196,40 @@ public class Bank {
         handlePrintDetails(bankingSystem, loadedAccount, recipientAccount, mergedTransaction);
     }
 
+    // inside processAccountOperations() and handleTransferCash()
+    public static String handleAccountNumberInput(Scanner scanner, String partialString) {
+        System.out.printf("\n# Enter %s account number: ", partialString);
+        return scanner.next().strip();
+    }
 
-    public static void main(String[] args) {
+    // inside processAccountOperations() and handleTransferCash()
+    public static Account handleAccessAccount(BankingSystem bankingSystem, String accNumber) {
+        return bankingSystem.loadAccountByNumber(accNumber);
 
-        BankingSystem bankingSystem = new BankingSystem();
-        Scanner scanner = new Scanner(System.in);
+    }
 
+    // inside handleDepositCash(), handleWithdrawCash(), handleTransferCash()
+    public static double handleAmountInput(Scanner scanner, String transactionType) {
         while (true) {
-           int choice1 = handleChoice1Input(scanner);
+            System.out.printf("\nEnter amount to %s: ", transactionType);
 
-           switch (choice1) {
-               case 3:
-                   System.out.println("\nTerminating application...");
-                   break;
-               case 2:
-                   handleShowCustomerDetails(bankingSystem, scanner);
-                   break;
-               case 1:
-                   boolean goBack = false;
+            try {
+                return Double.parseDouble(scanner.next());
 
-                   String accNumber = handleAccountNumberInput(scanner, "the");
-                   Account loadedAccount = handleAccessAccount(bankingSystem, accNumber);
-
-                   if (loadedAccount == null) {
-                       System.out.println("\nNo account found with account number: " + accNumber);
-                       goBack = true;
-                   }
-
-                   while (!goBack) {
-                       int choice2 = handleChoice2Input(scanner);
-
-                       switch (choice2) {
-                           case 1:
-                               handlePrintDetails(bankingSystem, loadedAccount);
-                               break;
-                           case 2:
-                               handleDepositCash(bankingSystem, scanner, loadedAccount);
-                               break;
-                           case 3:
-                               handleWithdrawCash(bankingSystem, scanner, loadedAccount);
-                               break;
-                           case 4:
-                               handleTransferCash(bankingSystem, scanner, loadedAccount);
-                               break;
-                           case 5:
-                               goBack = true;
-                               break;
-                           default:
-                               System.out.println("\nInvalid Input! Please select your choice and enter the relevant number.");
-                               break;
-                       }
-                   }
-                   break;
-               default:
-                   System.out.println("\nInvalid Input! Please select your choice and enter the relevant number.");
-                   break;
-           }
-
-            if (choice1 == 3) break;
-
+            } catch(NumberFormatException e) {
+                System.out.println("\nInvalid input! Please enter a valid amount.");
+            }
         }
     }
+
+
+
+
+
+
+
+
+
+
+
 }
