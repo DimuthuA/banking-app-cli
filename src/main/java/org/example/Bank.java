@@ -155,48 +155,56 @@ public class Bank {
         while (true) {
            int choice1 = handleChoice1Input(scanner);
 
-            if (choice1 == 3) {
-                break;
+           switch (choice1) {
+               case 3:
+                   System.out.println("\nTerminating application...");
+                   break;
+               case 2:
+                   handleShowCustomerDetails(bankingSystem, scanner);
+                   break;
+               case 1:
+                   boolean goBack = false;
 
-            } else if (choice1 == 2) {
-                handleShowCustomerDetails(bankingSystem, scanner);
+                   String accNumber = handleAccountNumberInput(scanner, "the");
+                   Account loadedAccount = handleAccessAccount(bankingSystem, accNumber);
 
-            } else if (choice1 == 1) {
-                boolean goBack = false;
+                   if (loadedAccount == null) {
+                       System.out.println("\nNo account found with account number: " + accNumber);
+                       goBack = true;
+                   }
 
-                String accNumber = handleAccountNumberInput(scanner, "the");
-                Account loadedAccount = handleAccessAccount(bankingSystem, accNumber);
+                   while (!goBack) {
+                       int choice2 = handleChoice2Input(scanner);
 
-                if (loadedAccount == null) {
-                    System.out.println("\nNo account found with account number: " + accNumber);
-                    goBack = true;
-                }
+                       switch (choice2) {
+                           case 1:
+                               handlePrintDetails(bankingSystem, loadedAccount);
+                               break;
+                           case 2:
+                               handleDepositCash(bankingSystem, scanner, loadedAccount);
+                               break;
+                           case 3:
+                               handleWithdrawCash(bankingSystem, scanner, loadedAccount);
+                               break;
+                           case 4:
+                               handleTransferCash(bankingSystem, scanner, loadedAccount);
+                               break;
+                           case 5:
+                               goBack = true;
+                               break;
+                           default:
+                               System.out.println("\nInvalid Input! Please select your choice and enter the relevant number.");
+                               break;
+                       }
+                   }
+                   break;
+               default:
+                   System.out.println("\nInvalid Input! Please select your choice and enter the relevant number.");
+                   break;
+           }
 
-                while (!goBack) {
-                    int choice2 = handleChoice2Input(scanner);
+            if (choice1 == 3) break;
 
-                    if (choice2 == 1) {
-                        handlePrintDetails(bankingSystem, loadedAccount);
-
-                    } else if (choice2 == 2) {
-                        handleDepositCash(bankingSystem, scanner, loadedAccount);
-
-                    } else if (choice2 == 3) {
-                        handleWithdrawCash(bankingSystem, scanner, loadedAccount);
-
-                    } else if (choice2 == 4) {
-                        handleTransferCash(bankingSystem, scanner, loadedAccount);
-
-                    } else if (choice2 == 5) {
-                        goBack = true;
-                    } else {
-                        System.out.println("\nInvalid Input! Please select your choice and enter the relevant number");
-                    }
-                }
-
-            } else {
-                System.out.println("\nInvalid Input! Please select your choice and enter the relevant number.");
-            }
         }
     }
 }
