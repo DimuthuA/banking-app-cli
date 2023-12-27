@@ -22,7 +22,7 @@ public class Bank {
             BankingSystem bankingSystem = new BankingSystem();
 
             while (true) {
-                int choice1 = handleChoice1Input(scanner);
+                int choice1 = handleInputChoice1(scanner);
 
                 switch (choice1) {
                     case OPTION_ACCESS_ACCOUNT:
@@ -33,6 +33,7 @@ public class Bank {
                         break;
                     case OPTION_TERMINATE_APPLICATION:
                         System.out.println("\nTerminating application...");
+                        EntityManagerFactorySingleton.shutdown();
                         return;
                     default:
                         System.out.println("\nInvalid Input! Please select your choice and enter the relevant number.");
@@ -43,7 +44,7 @@ public class Bank {
     }
 
     // Choice 1 - prompt and recording input
-    private static int handleChoice1Input(Scanner scanner) {
+    private static int handleInputChoice1(Scanner scanner) {
         String promptMessage = """
 
                     # Select an option -->
@@ -57,7 +58,7 @@ public class Bank {
     }
 
     // Choice 2 - prompt and recording input
-    private static int handleChoice2Input(Scanner scanner) {
+    private static int handleInputChoice2(Scanner scanner) {
         String promptMessage = """
 
                         # Select an option -->
@@ -72,7 +73,7 @@ public class Bank {
         return getValidIntegerInput(scanner, promptMessage);
     }
 
-    // inside handleChoice1Input() and handleChoice2Input()
+    // inside handleInputChoice1() and handleInputChoice2()
     private static int getValidIntegerInput(Scanner scanner, String promptMessage) {
         while (true) {
             System.out.print(promptMessage);
@@ -106,7 +107,7 @@ public class Bank {
         boolean goBack = false;
 
         while (!goBack) {
-            int choice2 = handleChoice2Input(scanner);
+            int choice2 = handleInputChoice2(scanner);
 
             switch (choice2) {
                 case OPTION_SHOW_ACCOUNT_DETAILS:

@@ -3,9 +3,7 @@ package org.example;
 import org.hibernate.Session;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Objects;
@@ -13,8 +11,7 @@ import java.util.Objects;
 public class BankingSystem {
 
     public Account loadAccountByNumber(String accNumber) {
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("hibernate");
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityManager entityManager = EntityManagerFactorySingleton.getEntityManagerFactory().createEntityManager();
 
         Account account = null;
 
@@ -57,23 +54,12 @@ public class BankingSystem {
             } catch (Exception e) {
                 System.out.println("\nException occurred while attempting to close entityManager!");
             }
-
-            try {
-                if (entityManagerFactory.isOpen()) {
-                    entityManagerFactory.close();
-                }
-            } catch (Exception e) {
-                System.out.println("\nException occurred while attempting to close entityManagerFactory!");
-            }
-
         }
-
         return account;
     }
 
     public Customer loadCustomerByNIC(String NIC) {
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("hibernate");
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityManager entityManager = EntityManagerFactorySingleton.getEntityManagerFactory().createEntityManager();
 
         Customer customer = null;
 
@@ -97,9 +83,6 @@ public class BankingSystem {
 
             entityManager.getTransaction().commit();
 
-
-
-
         } catch (NoResultException e) {
             // if no such customer is found in the database
 
@@ -119,23 +102,12 @@ public class BankingSystem {
             } catch (Exception e) {
                 System.out.println("\nException occurred while attempting to close entityManager!");
             }
-
-            try {
-                if (entityManagerFactory.isOpen()) {
-                    entityManagerFactory.close();
-                }
-            } catch (Exception e) {
-                System.out.println("\nException occurred while attempting to close entityManagerFactory!");
-            }
-
         }
-
         return customer;
     }
 
     public Account saveAccount(Account account) {
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("hibernate");
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityManager entityManager = EntityManagerFactorySingleton.getEntityManagerFactory().createEntityManager();
 
         Account mergedAccount = null;
 
@@ -173,23 +145,13 @@ public class BankingSystem {
             } catch (Exception e) {
                 System.out.println("\nException occurred while attempting to close entityManager!");
             }
-
-            try {
-                if (entityManagerFactory.isOpen()) {
-                    entityManagerFactory.close();
-                }
-            } catch (Exception e) {
-                System.out.println("\nException occurred while attempting to close entityManagerFactory!");
-            }
         }
-
         return mergedAccount;
     }
 
 
     public Transaction saveTransaction(Transaction transaction) {
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("hibernate");
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityManager entityManager = EntityManagerFactorySingleton.getEntityManagerFactory().createEntityManager();
 
         Transaction mergedTransaction = null;
 
@@ -227,16 +189,7 @@ public class BankingSystem {
             } catch (Exception e) {
                 System.out.println("\nException occurred while attempting to close entityManager!");
             }
-
-            try {
-                if (entityManagerFactory.isOpen()) {
-                    entityManagerFactory.close();
-                }
-            } catch (Exception e) {
-                System.out.println("\nException occurred while attempting to close entityManagerFactory!");
-            }
         }
-
         return mergedTransaction;
     }
 
@@ -352,7 +305,6 @@ public class BankingSystem {
             System.out.println("\nAccount creation failed! Invalid Account Type ID");
             return null;
         }
-
 
         System.out.printf("""
                                 
